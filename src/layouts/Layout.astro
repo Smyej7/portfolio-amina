@@ -1,0 +1,65 @@
+---
+import Header from "@components/Header.astro";
+import TranslationWrapper from "@components/TranslationWrapper.astro";
+import "@fontsource/be-vietnam-pro";
+import "@fontsource-variable/gabarito";
+import { SITE_CONFIG } from "@config";
+import Footer from "@components/Footer.astro";
+
+const {
+  title,
+  description,
+  siteLogo,
+  navLinks,
+  lang,
+  author,
+  socialLinks,
+  socialImage,
+  availableLanguages,
+  canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
+} = SITE_CONFIG;
+
+const ogImgUrl = canonicalURL + socialImage;
+---
+
+<!doctype html>
+<html lang={lang} class="dark scroll-pt-16 scroll-smooth">
+  <head>
+    <!-- Script pour initialiser le thème avant le rendu -->
+    <script is:inline>
+      const theme = localStorage.getItem("theme") || "dark";
+      document.documentElement.classList.add(theme);
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="author" content={author} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImgUrl} />
+
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={ogImgUrl} />
+  </head>
+  <body class="font-sans" style="background-color: var(--bg-primary); color: var(--text-primary);">
+    <TranslationWrapper>
+      <Header
+        siteLogo={siteLogo}
+        navLinks={navLinks}
+        availableLanguages={availableLanguages}
+      />
+      <main class="mx-auto max-w-3xl px-5">
+        <slot />
+      </main>
+      <Footer author={author} socialLinks={socialLinks} />
+    </TranslationWrapper>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+---
+import type { HeroProps } from "@types";
+import Section from "./Section.astro";
+import CVButton from "./CVButton.astro";
+import { SITE_CONFIG } from "@config";
+import { getTranslations } from "@/i18n/translations";
+
+type Props = HeroProps;
+
+const { name, specialty, summary, email } = Astro.props;
+const formattedSummary = summary.replace(/\n/g, "<br>");
+const t = getTranslations("fr"); // Langue par défaut
+---
+
+<section class="py-24 md:py-32" id="#hero">
+  <h1
+    class="mb-1.5 font-serif text-7xl font-bold tracking-tightest sm:text-8xl md:mb-0 md:text-9xl"
+    style="color: var(--text-primary);"
+    data-i18n="hero.name"
+  >
+    {t.hero.name}
+  </h1>
+  <p
+    class="mb-9 font-serif text-4xl leading-[46px] font-bold tracking-tighter text-primary sm:text-5xl md:text-6xl"
+    data-i18n="hero.specialty"
+  >
+    {t.hero.specialty}
+  </p>
+  <p
+    class="mb-16 text-base font-normal md:text-lg"
+    style="color: var(--text-secondary);"
+    data-i18n-html="hero.summary"
+    set:html={t.hero.summary.replace(/\n/g, "<br>")}
+  />
+
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+    <a
+      class="inline-block rounded-full bg-primary px-8 py-5 text-sm leading-5 font-medium text-[#fff]"
+      href={`mailto:${email}`}
+      data-i18n="hero.contactButton"
+    >
+      {t.hero.contactButton}
+    </a>
+
+    <CVButton cvLinks={SITE_CONFIG.cvLinks} />
+  </div>
+</section>

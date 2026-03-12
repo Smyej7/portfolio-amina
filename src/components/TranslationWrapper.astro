@@ -1,0 +1,123 @@
+---
+// Ce composant gère les traductions dynamiques côté client
+---
+
+<div id="translatable-content">
+  <slot />
+</div>
+
+<script>
+  import { translations } from "@/i18n/translations";
+  import { getExperienceTranslations } from "@/i18n/experienceTranslations";
+
+  function updateTranslations(lang: "fr" | "en") {
+    const t = translations[lang];
+    const expTranslations = getExperienceTranslations(lang);
+
+    // Mettre à jour tous les éléments avec data-i18n
+    document.querySelectorAll("[data-i18n]").forEach((element) => {
+      const key = element.getAttribute("data-i18n");
+      if (!key) return;
+
+      // Récupérer la traduction depuis l'objet imbriqué
+      const keys = key.split(".");
+      let value: any = t;
+      for (const k of keys) {
+        value = value[k];
+        if (!value) break;
+      }
+
+      if (value) {
+        if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+          (element as HTMLInputElement).placeholder = value;
+        } else {
+          element.textContent = value;
+        }
+      }
+    });
+
+    // Mettre à jour les éléments avec data-i18n-html (pour le HTML formaté)
+    document.querySelectorAll("[data-i18n-html]").forEach((element) => {
+      const key = element.getAttribute("data-i18n-html");
+      if (!key) return;
+
+      const keys = key.split(".");
+      let value: any = t;
+      for (const k of keys) {
+        value = value[k];
+        if (!value) break;
+      }
+
+      if (value) {
+        element.innerHTML = value.replace(/\n/g, "<br>");
+      }
+    });
+
+    // Mettre à jour les expériences dynamiques
+    updateExperiences(expTranslations.experiences, "experience");
+    updateExperiences(expTranslations.freelance, "freelance");
+  }
+
+  function updateExperiences(experiences: any[], type: string) {
+    experiences.forEach((exp, index) => {
+      // Mettre à jour le titre de l'entreprise
+      const companyElement = document.querySelector(
+        `[data-exp-company="${type}-${index}"]`,
+      );
+      if (companyElement) {
+        companyElement.textContent = exp.company;
+      }
+
+      // Mettre à jour le poste
+      const positionElement = document.querySelector(
+        `[data-exp-position="${type}-${index}"]`,
+      );
+      if (positionElement) {
+        positionElement.textContent = exp.position;
+      }
+
+      // Mettre à jour les dates
+      const startDateElement = document.querySelector(
+        `[data-exp-startdate="${type}-${index}"]`,
+      );
+      if (startDateElement) {
+        startDateElement.textContent = exp.startDate;
+      }
+
+      const endDateElement = document.querySelector(
+        `[data-exp-enddate="${type}-${index}"]`,
+      );
+      if (endDateElement) {
+        endDateElement.textContent = exp.endDate;
+      }
+
+      // Mettre à jour le résumé
+      if (Array.isArray(exp.summary)) {
+        exp.summary.forEach((summaryItem: string, summaryIndex: number) => {
+          const summaryElement = document.querySelector(
+            `[data-exp-summary="${type}-${index}-${summaryIndex}"]`,
+          );
+          if (summaryElement) {
+            summaryElement.textContent = summaryItem;
+          }
+        });
+      } else {
+        const summaryElement = document.querySelector(
+          `[data-exp-summary="${type}-${index}"]`,
+        );
+        if (summaryElement) {
+          summaryElement.textContent = exp.summary;
+        }
+      }
+    });
+  }
+
+  // Initialiser avec la langue stockée
+  const currentLang = (localStorage.getItem("language") as "fr" | "en") || "fr";
+  updateTranslations(currentLang);
+
+  // Écouter les changements de langue
+  window.addEventListener("languageChanged", (e: any) => {
+    updateTranslations(e.detail.lang);
+  });
+</script>

@@ -1,0 +1,163 @@
+---
+import { getTranslations } from "@/i18n/translations";
+
+interface Props {
+  cvLinks: {
+    fr: string;
+    en: string;
+  };
+}
+
+const { cvLinks } = Astro.props;
+const t = getTranslations("fr"); // Langue par défaut
+---
+
+<div class="cv-buttons flex flex-col gap-3 sm:flex-row">
+  <!-- Bouton Voir le CV avec menu -->
+  <div class="cv-view-wrapper relative">
+    <button
+      id="cv-view-button"
+      class="flex w-full items-center justify-center gap-2 rounded-full border-2 border-primary px-6 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-black"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+      <span data-i18n="hero.viewCV">{t.hero.viewCV}</span>
+    </button>
+
+    <div
+      id="cv-view-dropdown"
+      class="absolute top-full left-0 z-50 mt-2 hidden w-full overflow-hidden rounded-lg border shadow-lg"
+      style="background-color: var(--bg-primary); border-color: var(--border-color);"
+    >
+      <a
+        href={cvLinks.fr}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="cv-view-option block px-4 py-2 text-sm transition-colors hover:bg-primary hover:text-black"
+        style="color: var(--text-primary);"
+        data-lang="fr"
+        data-i18n="hero.cvVersionFr"
+      >
+        {t.hero.cvVersionFr}
+      </a>
+      <a
+        href={cvLinks.en}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="cv-view-option block px-4 py-2 text-sm transition-colors hover:bg-primary hover:text-black"
+        style="color: var(--text-primary);"
+        data-lang="en"
+        data-i18n="hero.cvVersionEn"
+      >
+        {t.hero.cvVersionEn}
+      </a>
+    </div>
+  </div>
+
+  <!-- Bouton Télécharger avec menu -->
+  <div class="cv-download-wrapper relative">
+    <button
+      id="cv-download-button"
+      class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-primary/90"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      <span data-i18n="hero.downloadCV">{t.hero.downloadCV}</span>
+    </button>
+
+    <div
+      id="cv-download-dropdown"
+      class="absolute top-full left-0 z-50 mt-2 hidden w-full overflow-hidden rounded-lg border shadow-lg"
+      style="background-color: var(--bg-primary); border-color: var(--border-color);"
+    >
+      <a
+        href={cvLinks.fr}
+        download
+        class="cv-download-option block px-4 py-2 text-sm transition-colors hover:bg-primary hover:text-black"
+        style="color: var(--text-primary);"
+        data-lang="fr"
+        data-i18n="hero.cvVersionFr"
+      >
+        {t.hero.cvVersionFr}
+      </a>
+      <a
+        href={cvLinks.en}
+        download
+        class="cv-download-option block px-4 py-2 text-sm transition-colors hover:bg-primary hover:text-black"
+        style="color: var(--text-primary);"
+        data-lang="en"
+        data-i18n="hero.cvVersionEn"
+      >
+        {t.hero.cvVersionEn}
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const cvViewButton = document.getElementById("cv-view-button");
+  const cvViewDropdown = document.getElementById("cv-view-dropdown");
+  const cvDownloadButton = document.getElementById("cv-download-button");
+  const cvDownloadDropdown = document.getElementById("cv-download-dropdown");
+
+  // Toggle dropdown pour "Voir le CV"
+  cvViewButton?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    cvViewDropdown?.classList.toggle("hidden");
+    cvDownloadDropdown?.classList.add("hidden");
+  });
+
+  // Toggle dropdown pour "Télécharger"
+  cvDownloadButton?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    cvDownloadDropdown?.classList.toggle("hidden");
+    cvViewDropdown?.classList.add("hidden");
+  });
+
+  // Fermer les dropdowns en cliquant ailleurs
+  document.addEventListener("click", () => {
+    cvViewDropdown?.classList.add("hidden");
+    cvDownloadDropdown?.classList.add("hidden");
+  });
+
+  // Fermer le dropdown après avoir cliqué sur une option
+  const cvViewOptions = document.querySelectorAll(".cv-view-option");
+  const cvDownloadOptions = document.querySelectorAll(".cv-download-option");
+
+  cvViewOptions.forEach((option) => {
+    option.addEventListener("click", () => {
+      cvViewDropdown?.classList.add("hidden");
+    });
+  });
+
+  cvDownloadOptions.forEach((option) => {
+    option.addEventListener("click", () => {
+      cvDownloadDropdown?.classList.add("hidden");
+    });
+  });
+</script>

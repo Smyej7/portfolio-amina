@@ -1,0 +1,32 @@
+---
+import { SITE_CONTENT } from "@config";
+import Hero from "@components/Hero.astro";
+import Layout from "@layouts/Layout.astro";
+import Experience from "@components/Experience.astro";
+import Projects from "@components/Projects.astro";
+import About from "@components/About.astro";
+
+import "../styles/global.css";
+---
+
+<Layout>
+  <Hero {...SITE_CONTENT.hero} />
+  <Experience
+    infos={SITE_CONTENT.experience}
+    sectionInfos={{
+      sectionName: "Expérience professionnelle",
+      href: "experience",
+    }}
+    experienceType="experience"
+  />
+  <!-- <Experience
+    infos={SITE_CONTENT.freelanceExperience}
+    sectionInfos={{
+      sectionName: "Projets freelance",
+      href: "freelance-projects",
+    }}
+    experienceType="freelance"
+  /> -->
+  <!-- <Projects projects={SITE_CONTENT.projects} /> -->
+  <About {...SITE_CONTENT.about} name={SITE_CONTENT.hero.name} />
+</Layout>

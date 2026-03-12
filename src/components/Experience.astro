@@ -1,0 +1,156 @@
+---
+import Section from "./Section.astro";
+import type { ExperienceProps, SectionProps } from "@types";
+
+interface Props {
+  infos: ExperienceProps[];
+  sectionInfos: SectionProps;
+  experienceType?: "experience" | "freelance";
+}
+
+const { infos, sectionInfos, experienceType = "experience" } = Astro.props;
+
+// Dictionnaire pour mapper les noms de technologies vers leurs noms d'icônes Devicon avec suffixe
+const techIconMap: Record<string, { name: string; suffix: string }> = {
+  AWS: { name: "amazonwebservices", suffix: "plain-wordmark" },
+  "Java 21 LTS": { name: "java", suffix: "original" },
+  "Java 17 LTS": { name: "java", suffix: "original" },
+  "Spring Boot": { name: "spring", suffix: "original" },
+  "Angular 19": { name: "angularjs", suffix: "original" },
+  GCP: { name: "googlecloud", suffix: "original" },
+  "Next.js 14": { name: "nextjs", suffix: "original" },
+  "React 18": { name: "react", suffix: "original" },
+  "Gitlab CI/CD": { name: "gitlab", suffix: "original" },
+  "Stripe API": { name: "stripe", suffix: "original" },
+  "Node.js": { name: "nodejs", suffix: "original" },
+  HTML: { name: "html5", suffix: "original" },
+  CSS: { name: "css3", suffix: "original" },
+  "Salesforce CLI": { name: "salesforce", suffix: "original" },
+  "Salesforce Object Search Language (SOSL)": {
+    name: "salesforce",
+    suffix: "original",
+  },
+  VisualForce: { name: "salesforce", suffix: "original" },
+  "Salesforce Object Query Language (SOQL)": {
+    name: "salesforce",
+    suffix: "original",
+  },
+  "Salesforce Workflows": { name: "salesforce", suffix: "original" },
+  "Lightning Web Components": { name: "salesforce", suffix: "original" },
+  TypeScript: { name: "typescript", suffix: "original" },
+  JavaScript: { name: "javascript", suffix: "original" },
+  "C#": { name: "csharp", suffix: "original" },
+  ".NET": { name: "dotnetcore", suffix: "original" },
+  "Vue.js": { name: "vuejs", suffix: "original" },
+  "Nuxt.js": { name: "nuxtjs", suffix: "original" },
+  "React Native": { name: "react", suffix: "original" },
+  "Express.js": { name: "express", suffix: "original" },
+  NestJS: { name: "nestjs", suffix: "original" },
+  PostgreSQL: { name: "postgresql", suffix: "original" },
+  MongoDB: { name: "mongodb", suffix: "original" },
+  MySQL: { name: "mysql", suffix: "original" },
+  TailwindCSS: { name: "tailwindcss", suffix: "original" },
+  Sass: { name: "sass", suffix: "original" },
+  SCSS: { name: "sass", suffix: "original" },
+  GitHub: { name: "github", suffix: "original" },
+  GitLab: { name: "gitlab", suffix: "original" },
+  "VS Code": { name: "vscode", suffix: "original" },
+  "Visual Studio": { name: "visualstudio", suffix: "original" },
+};
+
+// Fonction pour obtenir le nom et le suffixe de l'icône
+const getIconInfo = (tech: string): { name: string; suffix: string } => {
+  return (
+    techIconMap[tech] || {
+      name: tech.toLowerCase(),
+      suffix: "original",
+    }
+  );
+};
+---
+
+<Section
+  text={sectionInfos.sectionName}
+  href={sectionInfos.href}
+  translationKey={experienceType === "experience"
+    ? "sections.experience"
+    : "sections.freelance"}
+>
+  {
+    infos.map(
+      (
+        { company, position, startDate, endDate, summary, technologies },
+        index,
+      ) => (
+        <div class="mb-10">
+          <h3
+            class="mb-1.5 font-serif text-2xl font-semibold"
+            style="color: var(--text-primary);"
+            data-exp-company={`${experienceType}-${index}`}
+          >
+            {company}
+          </h3>
+          <div class="flex flex-col items-start pb-5">
+            <h4
+              class="mb-0.5 font-serif text-2xl font-medium text-primary"
+              data-exp-position={`${experienceType}-${index}`}
+            >
+              {position}
+            </h4>
+            <span
+              class="pb-[2px] text-sm"
+              style="color: var(--text-secondary);"
+            >
+              <span data-exp-startdate={`${experienceType}-${index}`}>
+                {startDate}
+              </span>{" "}
+              —{" "}
+              <span data-exp-enddate={`${experienceType}-${index}`}>
+                {endDate}
+              </span>
+            </span>
+          </div>
+          {Array.isArray(summary) ? (
+            <ul class="list-none">
+              {summary.map((log, summaryIndex) => (
+                <li
+                  class="relative mb-3 pl-8 text-base before:absolute before:top-1 before:left-0 before:content-[url(/check.svg)]"
+                  style="color: var(--text-secondary);"
+                  data-exp-summary={`${experienceType}-${index}-${summaryIndex}`}
+                >
+                  {log}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p
+              class="text-base"
+              style="color: var(--text-secondary);"
+              data-exp-summary={`${experienceType}-${index}`}
+            >
+              {summary}
+            </p>
+          )}
+          {technologies && technologies.length > 0 && (
+            <div class="mt-4 flex flex-wrap gap-2">
+              {technologies.map((tech) => {
+                const iconInfo = getIconInfo(tech);
+                return (
+                  <span class="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary ring-1 ring-primary/20 ring-inset">
+                    <img
+                      src={`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconInfo.name}/${iconInfo.name}-${iconInfo.suffix}.svg`}
+                      alt={tech}
+                      class="h-4 w-4"
+                      onerror="this.style.display='none'"
+                    />
+                    {tech}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ),
+    )
+  }
+</Section>

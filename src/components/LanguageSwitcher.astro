@@ -1,0 +1,99 @@
+---
+interface Props {
+  availableLanguages: { code: string; label: string }[];
+}
+
+const { availableLanguages } = Astro.props;
+---
+
+<div class="language-switcher relative">
+  <button
+    id="language-button"
+    class="flex items-center gap-2 rounded-lg border px-4 py-2 text-sm transition-colors hover:border-primary hover:text-primary"
+    style="background-color: var(--bg-primary); border-color: var(--border-color); color: var(--text-primary);"
+    aria-label="Changer de langue"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="2" y1="12" x2="22" y2="12"></line>
+      <path
+        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+      ></path>
+    </svg>
+    <span id="current-language">FR</span>
+  </button>
+
+  <div
+    id="language-dropdown"
+    class="absolute top-full right-0 z-50 mt-2 hidden w-32 overflow-hidden rounded-lg border shadow-lg"
+    style="background-color: var(--bg-primary); border-color: var(--border-color);"
+  >
+    {
+      availableLanguages.map(({ code, label }) => (
+        <button
+          class="language-option w-full px-4 py-2 text-left text-sm transition-colors hover:bg-primary hover:text-black"
+          style="color: var(--text-primary);"
+          data-lang={code}
+        >
+          {label}
+        </button>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  const languageButton = document.getElementById("language-button");
+  const languageDropdown = document.getElementById("language-dropdown");
+  const currentLanguageSpan = document.getElementById("current-language");
+  const languageOptions = document.querySelectorAll(".language-option");
+
+  // Récupérer la langue depuis localStorage ou utiliser 'fr' par défaut
+  let currentLang = localStorage.getItem("language") || "fr";
+  if (currentLanguageSpan) {
+    currentLanguageSpan.textContent = currentLang.toUpperCase();
+  }
+
+  // Toggle dropdown
+  languageButton?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    languageDropdown?.classList.toggle("hidden");
+  });
+
+  // Fermer le dropdown en cliquant ailleurs
+  document.addEventListener("click", () => {
+    languageDropdown?.classList.add("hidden");
+  });
+
+  // Changer de langue
+  languageOptions.forEach((option) => {
+    option.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      const lang = target.getAttribute("data-lang") || "fr";
+
+      localStorage.setItem("language", lang);
+      currentLang = lang;
+
+      if (currentLanguageSpan) {
+        currentLanguageSpan.textContent = lang.toUpperCase();
+      }
+
+      languageDropdown?.classList.add("hidden");
+
+      // Émettre un événement personnalisé pour que les autres composants puissent réagir
+      window.dispatchEvent(
+        new CustomEvent("languageChanged", { detail: { lang } }),
+      );
+    });
+  });
+</script>
